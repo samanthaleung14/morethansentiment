@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>More Than Sentiment — Music, Memory & AI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Mono:wght@300;400;500&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{--bg:#141418;--bg2:#1c1c22;--bg3:#262630;--cream:#f0ead8;--gold:#c9a84c;--gold2:#e8c96d;--red:#c0392b;--muted:#6b6b72;--border:#2a2a32;--text:#ddd8cc;}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Libre Baskerville',Georgia,serif;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");pointer-events:none;z-index:0;opacity:0.3;}
+::-webkit-scrollbar{width:4px;}::-webkit-scrollbar-track{background:var(--bg);}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px;}
+.page{display:none;min-height:100vh;}.page.active{display:block;}
+nav{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1.25rem 3rem;background:linear-gradient(to bottom,rgba(10,10,11,0.97),transparent);border-bottom:1px solid rgba(201,168,76,0.12);}
+.nav-logo{font-family:'DM Mono',monospace;font-size:0.72rem;letter-spacing:0.18em;color:var(--gold);text-transform:uppercase;cursor:pointer;}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{font-family:'DM Mono',monospace;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .25s;cursor:pointer;}
+.nav-links a:hover{color:var(--cream);}
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;padding:0 3rem 5rem;position:relative;overflow:hidden;z-index:1;}
+.hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 80% 60% at 60% 30%,rgba(201,168,76,0.08) 0%,transparent 60%),radial-gradient(ellipse 40% 50% at 20% 80%,rgba(192,57,43,0.06) 0%,transparent 50%),linear-gradient(to top,rgba(10,10,11,1) 0%,rgba(10,10,11,0.85) 50%,rgba(10,10,11,0.6) 100%);}
+.hero-waveform{position:absolute;top:50%;left:0;right:0;transform:translateY(-50%);display:flex;align-items:center;justify-content:center;gap:3px;opacity:0.06;pointer-events:none;z-index:0;}
+.wave-bar{width:3px;background:var(--gold);border-radius:2px;animation:wavePulse 2s ease-in-out infinite;}
+@keyframes wavePulse{0%,100%{transform:scaleY(1);}50%{transform:scaleY(var(--h));}}
+.hero-eyebrow{font-family:'DM Mono',monospace;font-size:0.7rem;letter-spacing:0.22em;color:var(--gold);text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;position:relative;z-index:2;}
+.hero-eyebrow::before{content:'';display:block;width:40px;height:1px;background:var(--gold);}
+.hero h1{font-family:'Playfair Display',serif;font-size:clamp(3.5rem,8vw,8rem);font-weight:900;line-height:.9;color:var(--cream);max-width:14ch;position:relative;z-index:2;text-shadow:0 2px 40px rgba(10,10,11,0.8);}
+.hero h1 em{font-style:italic;color:var(--gold);}
+.hero-sub{margin-top:2.5rem;max-width:55ch;font-size:1rem;line-height:1.75;color:#a8a29a;position:relative;z-index:2;}
+.hero-meta{margin-top:3rem;display:flex;gap:3rem;position:relative;z-index:2;}
+.hero-meta-item{display:flex;flex-direction:column;gap:.3rem;}
+.hero-meta-label{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.hero-meta-val{font-size:.88rem;color:var(--cream);}
+.hero-scroll-hint{position:absolute;bottom:2.5rem;right:3rem;writing-mode:vertical-rl;font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;display:flex;align-items:center;gap:.75rem;animation:float 3s ease-in-out infinite;z-index:2;}
+.hero-scroll-hint::after{content:'';display:block;width:1px;height:40px;background:var(--gold);}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+section{padding:7rem 3rem;}
+.section-header{display:flex;align-items:baseline;gap:1.5rem;margin-bottom:4rem;padding-bottom:1.5rem;border-bottom:1px solid var(--border);}
+.section-num{font-family:'DM Mono',monospace;font-size:.68rem;letter-spacing:.15em;color:var(--gold);}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.5rem);font-weight:700;color:var(--cream);line-height:1.1;}
+.section-title em{font-style:italic;color:var(--gold);}
+.narrative{background:var(--bg2);border-left:3px solid var(--gold);padding:2.5rem 3rem;margin-bottom:5rem;max-width:75ch;}
+.narrative p{font-size:1.05rem;line-height:1.85;color:var(--text);}
+.narrative p+p{margin-top:1.25rem;}
+.artifacts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);}
+.artifact-card{background:var(--bg2);position:relative;overflow:hidden;cursor:pointer;transition:background .3s;display:flex;flex-direction:column;}
+.artifact-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:3px;background:var(--gold);transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.16,1,.3,1);z-index:2;}
+.artifact-card:hover{background:var(--bg3);}.artifact-card:hover::before{transform:scaleX(1);}
+.card-cover{width:100%;aspect-ratio:1;overflow:hidden;position:relative;background:var(--bg3);flex-shrink:0;}
+.card-cover img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.16,1,.3,1),filter .4s;filter:brightness(.85) saturate(.9);}
+.artifact-card:hover .card-cover img{transform:scale(1.04);filter:brightness(1) saturate(1.05);}
+.card-cover-overlay{position:absolute;inset:0;background:linear-gradient(to top,rgba(10,10,11,.7) 0%,transparent 50%);pointer-events:none;}
+.card-play-hint{position:absolute;bottom:.75rem;right:.75rem;background:rgba(201,168,76,.92);color:#0a0a0b;font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.12em;text-transform:uppercase;padding:.3rem .65rem;opacity:0;transition:opacity .25s;}
+.artifact-card:hover .card-play-hint{opacity:1;}
+.card-body{padding:2rem;flex:1;display:flex;flex-direction:column;}
+.card-number{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;margin-bottom:.75rem;}
+.card-title{font-family:'Playfair Display',serif;font-size:1.45rem;font-weight:700;color:var(--cream);line-height:1.2;margin-bottom:.3rem;}
+.card-artist{font-family:'DM Mono',monospace;font-size:.72rem;color:var(--gold);letter-spacing:.06em;margin-bottom:.75rem;}
+.card-year{display:inline-block;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);color:var(--gold);font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;padding:.18rem .55rem;margin-bottom:1.25rem;}
+.card-text{font-size:.87rem;line-height:1.78;color:#8a8480;margin-bottom:1.5rem;flex:1;}
+.card-tags{display:flex;flex-wrap:wrap;gap:.35rem;margin-bottom:1.5rem;}
+.tag{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.1em;text-transform:uppercase;padding:.2rem .55rem;border:1px solid var(--border);color:var(--muted);}
+.tag.hl{border-color:rgba(201,168,76,.4);color:var(--gold);background:rgba(201,168,76,.06);}
+.card-cta{display:inline-flex;align-items:center;gap:.5rem;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.12em;text-transform:uppercase;color:var(--cream);border-bottom:1px solid var(--gold);padding-bottom:1px;width:fit-content;}
+.pullquote{font-family:'Playfair Display',serif;font-size:clamp(1.3rem,2.2vw,2rem);font-style:italic;color:var(--cream);line-height:1.5;border-left:4px solid var(--gold);padding:1.5rem 2.5rem;margin:4rem 0;max-width:68ch;}
+.pullquote cite{display:block;margin-top:1rem;font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.12em;color:var(--muted);font-style:normal;text-transform:uppercase;}
+.tag-cloud-section{background:var(--bg2);border:1px solid var(--border);padding:3rem;margin-bottom:4rem;}
+.tag-cloud-title{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:2rem;}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:.6rem;align-items:center;}
+.cloud-tag{font-family:'Libre Baskerville',serif;color:var(--cream);cursor:default;transition:color .2s;line-height:1.4;}
+.cloud-tag:hover{color:var(--gold);}
+.contributors{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);margin-top:4rem;}
+.contributor-card{background:var(--bg2);padding:1.75rem 2rem;transition:background .2s;}
+.contributor-card:hover{background:var(--bg3);}
+.contributor-name{font-family:'Playfair Display',serif;font-size:1rem;color:var(--cream);margin-bottom:.4rem;}
+.contributor-role{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);}
+footer{border-top:1px solid var(--border);padding:3rem;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1.5rem;}
+.footer-copy,.footer-right{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.1em;color:var(--muted);}
+.footer-right{text-align:right;}
+hr.rule{border:none;height:1px;background:linear-gradient(to right,transparent,var(--border),transparent);}
+.fade-in{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease;}
+.fade-in.visible{opacity:1;transform:translateY(0);}
+
+/* DETAIL PAGE */
+.detail-page{background:var(--bg);padding-top:80px;}
+.detail-back{display:inline-flex;align-items:center;gap:.6rem;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);cursor:pointer;padding:2.5rem 3rem 0;transition:color .2s;text-decoration:none;}
+.detail-back:hover{color:var(--gold);}
+.detail-back svg{width:12px;height:12px;}
+.detail-hero{display:grid;grid-template-columns:340px 1fr;gap:0;border-bottom:1px solid var(--border);margin-top:2rem;}
+.detail-cover{position:relative;overflow:hidden;aspect-ratio:1;background:var(--bg2);}
+.detail-cover img{width:100%;height:100%;object-fit:cover;filter:brightness(.9) saturate(.95);}
+.detail-cover-overlay{position:absolute;inset:0;background:linear-gradient(135deg,transparent 50%,rgba(10,10,11,.5));}
+.detail-header{background:var(--bg2);padding:3rem 3.5rem;display:flex;flex-direction:column;justify-content:flex-end;border-left:1px solid var(--border);}
+.detail-eyebrow{font-family:'DM Mono',monospace;font-size:.62rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;margin-bottom:1.25rem;display:flex;align-items:center;gap:.75rem;}
+.detail-eyebrow::before{content:'';display:block;width:30px;height:1px;background:var(--gold);}
+.detail-h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,4vw,3.8rem);font-weight:900;color:var(--cream);line-height:1;margin-bottom:.5rem;}
+.detail-h1 em{font-style:italic;color:var(--gold);}
+.detail-artist{font-family:'DM Mono',monospace;font-size:.85rem;color:var(--gold);letter-spacing:.06em;margin-bottom:.5rem;}
+.detail-meta-line{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin-bottom:2rem;line-height:1.8;}
+.detail-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:2rem;}
+.detail-listen{display:inline-flex;align-items:center;gap:.5rem;background:var(--gold);color:#0a0a0b;font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;padding:.65rem 1.25rem;text-decoration:none;font-weight:500;transition:background .2s;width:fit-content;}
+.detail-listen:hover{background:var(--gold2);}
+.detail-listen svg{width:12px;height:12px;}
+.detail-body{padding:4rem 3rem;max-width:1200px;}
+.detail-section{margin-bottom:4rem;}
+.detail-section-label{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;display:flex;align-items:center;gap:.75rem;}
+.detail-section-label::before{content:'';display:block;width:20px;height:1px;background:var(--gold);}
+.detail-section-title{font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--cream);margin-bottom:1.25rem;font-weight:700;}
+.detail-text{font-size:.95rem;line-height:1.85;color:var(--text);max-width:72ch;}
+.detail-text+.detail-text{margin-top:1.1rem;}
+.detail-text strong{color:var(--cream);font-weight:700;}
+.detail-text em{font-style:italic;color:var(--gold2);}
+.obs-video-wrap{background:var(--bg2);border:1px solid var(--border);padding:1.5rem;margin:2rem 0;}
+.obs-label{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin-bottom:1rem;display:flex;align-items:center;gap:.5rem;}
+.obs-label::before{content:'●';color:var(--red);font-size:.6rem;animation:blink 1.5s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.3;}}
+.obs-video-placeholder{width:100%;aspect-ratio:16/9;background:#0d0d10;border:1px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1rem;color:var(--muted);}
+.obs-video-placeholder svg{width:40px;height:40px;opacity:.3;}
+.obs-video-placeholder p{font-family:'DM Mono',monospace;font-size:.65rem;letter-spacing:.1em;text-align:center;line-height:1.7;}
+.obs-video-embed{width:100%;aspect-ratio:16/9;display:block;}
+.analysis-block{background:var(--bg2);border:1px solid var(--border);padding:2.5rem;margin-bottom:2rem;position:relative;}
+.analysis-block::after{content:attr(data-type);position:absolute;top:-.65rem;left:1.5rem;background:var(--bg2);padding:0 .6rem;font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);}
+.analysis-title{font-family:'Playfair Display',serif;font-size:1.25rem;color:var(--cream);margin-bottom:.4rem;}
+.analysis-subtitle{font-family:'DM Mono',monospace;font-size:.65rem;color:var(--muted);margin-bottom:1.5rem;line-height:1.6;}
+.analysis-text{font-size:.92rem;line-height:1.85;color:#9a9490;max-width:72ch;}
+.analysis-text+.analysis-text{margin-top:1rem;}
+.analysis-text strong{color:var(--cream);}
+.metric-row{display:flex;gap:1.25rem;margin:1.75rem 0;flex-wrap:wrap;}
+.metric-box{background:var(--bg);border:1px solid var(--border);padding:1rem 1.5rem;display:flex;flex-direction:column;gap:.25rem;min-width:130px;}
+.metric-label{font-family:'DM Mono',monospace;font-size:.55rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);}
+.metric-val{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;color:var(--gold);}
+.metric-desc{font-family:'DM Mono',monospace;font-size:.58rem;color:var(--muted);}
+.cmp-table{width:100%;border-collapse:collapse;margin-top:1.5rem;font-size:.84rem;}
+.cmp-table th{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);text-align:left;padding:.75rem 1rem;border-bottom:1px solid var(--border);}
+.cmp-table td{padding:.75rem 1rem;border-bottom:1px solid rgba(42,42,50,.5);color:var(--text);vertical-align:top;line-height:1.65;}
+.cmp-table tr:last-child td{border-bottom:none;}
+.td-ai{color:var(--gold)!important;}.td-h{color:#acd4b0!important;}
+.lyric-excerpt{background:var(--bg);border-left:2px solid var(--gold);padding:1rem 1.5rem;margin:1.5rem 0;font-style:italic;font-size:.88rem;line-height:1.75;color:#b0a898;}
+.jbars{display:flex;flex-direction:column;gap:1rem;margin:1.5rem 0;}
+.jbar-label{font-family:'DM Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;display:flex;justify-content:space-between;}
+.jbar-track{height:5px;background:var(--bg);border:1px solid var(--border);border-radius:3px;overflow:hidden;}
+.jbar-fill{height:100%;background:var(--gold);border-radius:3px;transition:width 1.4s cubic-bezier(.16,1,.3,1);width:0;}
+.verdict-box{background:rgba(201,168,76,.05);border:1px solid rgba(201,168,76,.25);padding:1.5rem 2rem;margin-top:2rem;}
+.verdict-label{font-family:'DM Mono',monospace;font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.6rem;}
+.verdict-text{font-size:.9rem;line-height:1.75;color:var(--text);}
+@media(max-width:900px){.detail-hero{grid-template-columns:1fr;}.detail-cover{aspect-ratio:16/9;}nav{padding:1rem 1.5rem;}.nav-links{display:none;}section{padding:4rem 1.5rem;}.hero{padding:0 1.5rem 4rem;}.artifacts-grid{grid-template-columns:1fr;}.detail-back,.detail-body{padding-left:1.5rem;padding-right:1.5rem;}footer{padding:2rem 1.5rem;flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<nav id="mainNav">
+  <span class="nav-logo" onclick="showPage('home')">More Than Sentiment</span>
+  <ul class="nav-links">
+    <li><a onclick="showPage('home');scrollToSection('about')">About</a></li>
+    <li><a onclick="showPage('home');scrollToSection('artifacts')">Artifacts</a></li>
+    <li><a onclick="showPage('home');scrollToSection('team')">Team</a></li>
+  </ul>
+</nav>
+
+<!-- ═══ HOME ═══ -->
+<div id="page-home" class="page active">
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-waveform" id="waveform"></div>
+  <div class="hero-eyebrow">DH 150 · Archive Project · 2026</div>
+  <h1>More Than <em>Sentiment</em></h1>
+  <p class="hero-sub">Metaphor, Voice, and AI in Music — An archive exploring music as cultural memory and the mounting instability of authorship in the age of artificial intelligence.</p>
+  <div class="hero-meta">
+    <div class="hero-meta-item"><span class="hero-meta-label">Artifacts</span><span class="hero-meta-val">6 Songs Analyzed</span></div>
+    <div class="hero-meta-item"><span class="hero-meta-label">AI Evaluations</span><span class="hero-meta-val">6 Methodologies</span></div>
+    <div class="hero-meta-item"><span class="hero-meta-label">Languages</span><span class="hero-meta-val">English · Spanish</span></div>
+  </div>
+  <div class="hero-scroll-hint">Scroll to explore</div>
+</div>
+<hr class="rule"/>
+<section id="about">
+  <div class="section-header fade-in"><span class="section-num">01 —</span><h2 class="section-title">About the <em>Archive</em></h2></div>
+  <div class="narrative fade-in">
+    <p>Music functions as cultural memory and emotional record — a vessel for identity, protest, nostalgia, and longing. But artificial intelligence is changing how music is made, circulated, and trusted, creating new and urgent challenges for archives.</p>
+    <p>This project is organized into two movements. The first examines human-made music as a record of feeling across contexts: heartbreak, bravado, social critique, resilience, and longing. The second confronts the problem of <em>unstable authorship</em> — AI-generated or AI-altered music where audiences can no longer easily distinguish what is real, original, or human-made.</p>
+    <p>Each artifact carries a museum-style entry connecting creator, year, cultural circulation, and rhetorical function. Together they build a curated argument: that AI tools, however powerful, consistently miss what makes music matter. <strong style="color:var(--cream)">Click any artifact card to explore the full analysis.</strong></p>
+  </div>
+  <blockquote class="pullquote fade-in">"Meaning in music often lives in tone and stance, not just keywords — and that is exactly the kind of nuance that gets flattened when we force songs into simple positive/negative sentiment buckets."<cite>— Archive Narrative</cite></blockquote>
+  <div class="tag-cloud-section fade-in">
+    <p class="tag-cloud-title">Recurring themes across artifacts</p>
+    <div class="tag-cloud" id="tagCloud"></div>
+  </div>
+</section>
+<hr class="rule"/>
+<section id="artifacts">
+  <div class="section-header fade-in"><span class="section-num">02 —</span><h2 class="section-title">The <em>Artifacts</em></h2></div>
+  <div class="narrative fade-in"><p>Six songs, each selected because they stress-test a different aspect of AI-assisted interpretation. Click any card to open the full museum entry with album cover, song clip, and complete analysis.</p></div>
+  <div class="artifacts-grid">
+
+    <div class="artifact-card fade-in" onclick="showPage('beauty')">
+      <div class="card-cover">
+        <img src="https://upload.wikimedia.org/wikipedia/en/3/31/Justin_Bieber_-_Beauty_and_a_Beat.png" alt="Believe — Justin Bieber" onerror="this.style.display='none';this.parentNode.style.background='#18181d'"/>
+        <div class="card-cover-overlay"></div><span class="card-play-hint">View Artifact →</span>
+      </div>
+      <div class="card-body">
+        <div class="card-number">Artifact 01 · Classification / Tagging</div>
+        <div class="card-title">Beauty and a Beat</div>
+        <div class="card-artist">Justin Bieber feat. Nicki Minaj</div>
+        <span class="card-year">2012 · Believe · RBMG / Def Jam</span>
+        <p class="card-text">High-energy pop that derives meaning from production and cultural context rather than lyrical content — a stress test for AI classification and tagging tools.</p>
+        <div class="card-tags"><span class="tag hl">classification</span><span class="tag hl">energy</span><span class="tag">nostalgia</span><span class="tag">BART MNLI</span><span class="tag">Jaccard 0.60</span></div>
+        <span class="card-cta">Open Artifact →</span>
+      </div>
+    </div>
+
+    <div class="artifact-card fade-in" onclick="showPage('royals')">
+      <div class="card-cover">
+        <img src="https://i.scdn.co/image/ab67616d0000b273187331e276c898d39764cc98" alt="Pure Heroine — Lorde" onerror="this.style.display='none';this.parentNode.style.background='#18181d'"/>
+        <div class="card-cover-overlay"></div><span class="card-play-hint">View Artifact →</span>
+      </div>
+      <div class="card-body">
+        <div class="card-number">Artifact 02 · Sentiment Analysis</div>
+        <div class="card-title">Royals</div>
+        <div class="card-artist">Lorde</div>
+        <span class="card-year">2013 · Pure Heroine · Universal</span>
+        <p class="card-text">A satirical critique of wealth delivered with cool confidence — easily misread as celebration by AI sentiment tools like VADER and Gemini.</p>
+        <div class="card-tags"><span class="tag hl">sentiment</span><span class="tag hl">satire</span><span class="tag">VADER</span><span class="tag">Gemini</span><span class="tag">irony</span></div>
+        <span class="card-cta">Open Artifact →</span>
+      </div>
+    </div>
+
+    <div class="artifact-card fade-in" onclick="showPage('rapgod')">
+      <div class="card-cover">
+        <img src="https://upload.wikimedia.org/wikipedia/en/5/50/Eminem_Rap_God.png" alt="MMLP2 — Eminem" onerror="this.style.display='none';this.parentNode.style.background='#18181d'"/>
+        <div class="card-cover-overlay"></div><span class="card-play-hint">View Artifact →</span>
+      </div>
+      <div class="card-body">
+        <div class="card-number">Artifact 03 · Transcription</div>
+        <div class="card-title">Rap God</div>
+        <div class="card-artist">Eminem</div>
+        <span class="card-year">2013 · The Marshall Mathers LP 2</span>
+        <p class="card-text">Whisper AI achieved a 92.2% Word Error Rate — exposing transcription as a gatekeeper for what parts of a musical artifact become legible to future audiences.</p>
+        <div class="card-tags"><span class="tag hl">transcription</span><span class="tag hl">WER 92%</span><span class="tag">Whisper</span><span class="tag">speed</span><span class="tag">metadata</span></div>
+        <span class="card-cta">Open Artifact →</span>
+      </div>
+    </div>
+
+    <div class="artifact-card fade-in" onclick="showPage('alright')">
+      <div class="card-cover">
+        <img src="https://cdn-images.dzcdn.net/images/cover/5c163a572dc76597231aa942375dec89/1900x1900-000000-81-0-0.jpg" alt="To Pimp a Butterfly — Kendrick Lamar" onerror="this.style.display='none';this.parentNode.style.background='#18181d'"/>
+        <div class="card-cover-overlay"></div><span class="card-play-hint">View Artifact →</span>
+      </div>
+      <div class="card-body">
+        <div class="card-number">Artifact 04 · Natural Language Processing</div>
+        <div class="card-title">Alright</div>
+        <div class="card-artist">Kendrick Lamar</div>
+        <span class="card-year">2015 · To Pimp a Butterfly · TDE</span>
+        <p class="card-text">NLP can surface keywords but cannot register their rhetorical function within a tradition of Black protest music and community resilience.</p>
+        <div class="card-tags"><span class="tag hl">NLP</span><span class="tag hl">protest</span><span class="tag">tokenization</span><span class="tag">n-gram</span><span class="tag">BLM</span></div>
+        <span class="card-cta">Open Artifact →</span>
+      </div>
+    </div>
+
+    <div class="artifact-card fade-in" onclick="showPage('dtmf')">
+      <div class="card-cover">
+        <img src="https://cvhsnews.org/wp-content/uploads/2025/03/bad-bunnt-covery.jpg" alt="Un Verano Sin Ti — Bad Bunny" onerror="this.style.display='none';this.parentNode.style.background='#18181d'"/>
+        <div class="card-cover-overlay"></div><span class="card-play-hint">View Artifact →</span>
+      </div>
+      <div class="card-body">
+        <div class="card-number">Artifact 05 · Translation + Computer Vision</div>
+        <div class="card-title">DTMF</div>
+        <div class="card-artist">Bad Bunny</div>
+        <span class="card-year">2022 · Un Verano Sin Ti · Rimas</span>
+        <p class="card-text">A bilingual artifact exposing AI's limits across language and culture — Google Translate collapses on Puerto Rican slang while computer vision struggles with nuanced imagery.</p>
+        <div class="card-tags"><span class="tag hl">translation</span><span class="tag hl">computer vision</span><span class="tag">SBERT</span><span class="tag">Jaccard</span><span class="tag">Spanish</span></div>
+        <span class="card-cta">Open Artifact →</span>
+      </div>
+    </div>
+
+    <div class="artifact-card fade-in" onclick="showPage('dancingqueen')">
+      <div class="card-cover">
+        <img src="https://e.snmc.io/i/1200/s/ba93504b7f780c46091fab825004e562/11411333" alt="Arrival — ABBA" onerror="this.style.display='none';this.parentNode.style.background='#18181d'"/>
+        <div class="card-cover-overlay"></div><span class="card-play-hint">View Artifact →</span>
+      </div>
+      <div class="card-body">
+        <div class="card-number">Artifact 06 · Sentiment Analysis</div>
+        <div class="card-title">Dancing Queen</div>
+        <div class="card-artist">ABBA</div>
+        <span class="card-year">1976 · ABBA Gold · Polar Music</span>
+        <p class="card-text">VADER scores 0.08 (barely positive) while BERT scores 0.99 — a methodological split revealing why context-aware transformers outperform lexicon tools for music archives.</p>
+        <div class="card-tags"><span class="tag hl">sentiment</span><span class="tag hl">BERT</span><span class="tag">VADER</span><span class="tag">context</span><span class="tag">methodology</span></div>
+        <span class="card-cta">Open Artifact →</span>
+      </div>
+    </div>
+
+  </div>
+</section>
+<hr class="rule"/>
+<section id="team">
+  <div class="section-header fade-in"><span class="section-num">03 —</span><h2 class="section-title">The <em>Team</em></h2></div>
+  <div class="contributors fade-in">
+    <div class="contributor-card"><div class="contributor-name">Erica Yee</div><div class="contributor-role">Archive Research</div></div>
+    <div class="contributor-card"><div class="contributor-name">Eric Jung</div><div class="contributor-role">Archive Research</div></div>
+    <div class="contributor-card"><div class="contributor-name">Julian Macareg</div><div class="contributor-role">Archive Research</div></div>
+    <div class="contributor-card"><div class="contributor-name">Marvin Deng</div><div class="contributor-role">Archive Research</div></div>
+    <div class="contributor-card"><div class="contributor-name">Samantha Leung</div><div class="contributor-role">Archive Research</div></div>
+  </div>
+</section>
+<footer>
+  <div class="footer-copy">More Than Sentiment: Metaphor, Voice, and AI in Music<br/>DH 150 · Capstone Archive Project · 2026</div>
+  <div class="footer-right">Songs linked to official YouTube sources.<br/>Short lyric excerpts used for commentary only.</div>
+</footer>
+</div><!-- /home -->
+
+
+<!-- ═══ DETAIL: BEAUTY AND A BEAT ═══ -->
+<div id="page-beauty" class="page detail-page">
+<a class="detail-back" onclick="showPage('home')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6H2M2 6L6 2M2 6L6 10"/></svg>Back to Archive</a>
+<div class="detail-hero">
+  <div class="detail-cover">
+    <img src="https://upload.wikimedia.org/wikipedia/en/3/31/Justin_Bieber_-_Beauty_and_a_Beat.png" alt="Believe — Justin Bieber"/>
+    <div class="detail-cover-overlay"></div>
+  </div>
+  <div class="detail-header">
+    <div class="detail-eyebrow">Artifact 01 · Classification / Tagging</div>
+    <div class="detail-h1">Beauty and a <em>Beat</em></div>
+    <div class="detail-artist">Justin Bieber feat. Nicki Minaj</div>
+    <div class="detail-meta-line">2012 · Believe · RBMG / Def Jam<br/>Produced by Max Martin, Zedd</div>
+    <div class="detail-tags"><span class="tag hl">classification</span><span class="tag hl">energy</span><span class="tag">nostalgia</span><span class="tag">slang</span><span class="tag">persona</span><span class="tag">BART MNLI</span><span class="tag">Jaccard 0.60</span></div>
+    <a href="https://www.youtube.com/watch?v=Ys7-6_t7OEQ" target="_blank" class="detail-listen"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>Listen on YouTube</a>
+  </div>
+</div>
+<div class="detail-body">
+  <div class="detail-section">
+    <div class="detail-section-label">Museum Entry</div>
+    <p class="detail-text">"Beauty and a Beat" is a nostalgic, high-energy pop/rap collaboration that most of its generation knows by heart. The lyrics often portray party-like imagery and are oftentimes repetitive, creating immersive, high-energy listening experiences. This pop/rap song is versatile as it creates persona and rhythm that provide meaning and symbolism within the music. However, its power comes almost entirely from its production, cultural context, and delivery rather than its lyrics in isolation — making it an ideal stress test for AI classification tools that rely on lyrical pattern-matching.</p>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">OBS Recording Clip</div>
+    <div class="obs-video-wrap">
+      <div class="obs-label">OBS Recorded Clip — 5 second excerpt</div>
+      <div class="obs-video-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <p>To add your OBS clip: replace this block with<br/>&lt;video src="BeautyAndABeat_OBS.mp4" controls class="obs-video-embed"&gt;&lt;/video&gt;</p>
+      </div>
+    </div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">Analysis</div>
+    <div class="analysis-block" data-type="Classification / Tagging">
+      <div class="analysis-title">BART Large MNLI — Zero-Shot Classification</div>
+      <div class="analysis-subtitle">Method: Zero-shot classification via BART Large MNLI · Metric: Jaccard Similarity (manual vs. AI tags)</div>
+      <p class="analysis-text">We used BART Large MNLI to classify dissected lyrics from "Beauty and a Beat." This model assigns text to categories without being explicitly trained on a specific dataset, making it useful for archival tagging workflows. We compared AI-generated labels side-by-side with manually identified thematic categories.</p>
+      <p class="analysis-text">In our manual analysis, the primary themes were <strong>nightlife/party, dancing/music, and romance</strong> — categories reflecting the song's target demographics: club environments, high-energy social settings, and intimate interactions between Justin Bieber and Nicki Minaj's listeners.</p>
+      <div class="metric-row">
+        <div class="metric-box"><span class="metric-label">Nightlife/Party</span><span class="metric-val">0.91</span><span class="metric-desc">AI confidence</span></div>
+        <div class="metric-box"><span class="metric-label">Dance Music</span><span class="metric-val">0.87</span><span class="metric-desc">AI confidence</span></div>
+        <div class="metric-box"><span class="metric-label">Romance</span><span class="metric-val">0.64</span><span class="metric-desc">AI confidence</span></div>
+        <div class="metric-box"><span class="metric-label">Celebrity Culture</span><span class="metric-val">0.33</span><span class="metric-desc">AI confidence</span></div>
+        <div class="metric-box"><span class="metric-label">Jaccard Score</span><span class="metric-val">0.60</span><span class="metric-desc">3 shared / 5 unique</span></div>
+      </div>
+      <table class="cmp-table">
+        <thead><tr><th>Category</th><th class="td-ai">AI Confidence</th><th class="td-h">Human Assessment</th></tr></thead>
+        <tbody>
+          <tr><td>Nightlife/Party</td><td class="td-ai">0.91 ✓</td><td class="td-h">✓ Primary theme</td></tr>
+          <tr><td>Dance Music</td><td class="td-ai">0.87 ✓</td><td class="td-h">✓ Primary theme</td></tr>
+          <tr><td>Romance</td><td class="td-ai">0.64 ✓</td><td class="td-h">✓ Present throughout</td></tr>
+          <tr><td>Celebrity Culture</td><td class="td-ai">0.33 ✗</td><td class="td-h">Nicki's verse signals fame, status, pop performance</td></tr>
+          <tr><td>Wealth Culture</td><td class="td-ai">0.21 ✗</td><td class="td-h">Present but secondary</td></tr>
+        </tbody>
+      </table>
+      <p class="analysis-text" style="margin-top:1.5rem;">The top 3 predicted categories overlapped with human-identified themes, yielding a Jaccard score of 0.60. However, the model assigned relatively low confidence to celebrity culture — a significant miss, since Nicki Minaj's verse explicitly signals fame and pop performance. The model privileges frequently repeated vocabulary over broader cultural context, missing the significance of performer identity as a thematic signal.</p>
+      <div class="verdict-box">
+        <div class="verdict-label">Archival Verdict</div>
+        <p class="verdict-text">BART Large MNLI is a useful tool for first-pass metadata generation on large lyric datasets — an archive holding thousands of songs can generate thematic labels to assist with research and discovery. However, because it relies primarily on lyrical patterns, it overlooks contextual and cultural meaning. AI-generated labels should undergo human review, especially for content where cultural significance is carried by performer identity rather than lyrical frequency. <strong>Not ready for fully automated archival tagging.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ═══ DETAIL: ROYALS ═══ -->
+<div id="page-royals" class="page detail-page">
+<a class="detail-back" onclick="showPage('home')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6H2M2 6L6 2M2 6L6 10"/></svg>Back to Archive</a>
+<div class="detail-hero">
+  <div class="detail-cover">
+    <img src="https://i.scdn.co/image/ab67616d0000b273187331e276c898d39764cc98" alt="Pure Heroine — Lorde"/>
+    <div class="detail-cover-overlay"></div>
+  </div>
+  <div class="detail-header">
+    <div class="detail-eyebrow">Artifact 02 · Sentiment Analysis</div>
+    <div class="detail-h1"><em>Royals</em></div>
+    <div class="detail-artist">Lorde</div>
+    <div class="detail-meta-line">2013 · Pure Heroine · Universal Music NZ<br/>Written by Ella Yelich-O'Connor & Joel Little</div>
+    <div class="detail-tags"><span class="tag hl">sentiment</span><span class="tag hl">satire</span><span class="tag">irony</span><span class="tag">VADER</span><span class="tag">Gemini 2.5</span><span class="tag">social critique</span><span class="tag">wealth</span></div>
+    <a href="https://youtu.be/nlcIKh6sBtc" target="_blank" class="detail-listen"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>Listen on YouTube</a>
+  </div>
+</div>
+<div class="detail-body">
+  <div class="detail-section">
+    <div class="detail-section-label">Museum Entry</div>
+    <p class="detail-text">"Royals" is a flagship example of pop that uses a catchy, confident tone to deliver satire and social critique about wealth and status. The song sets up an "us vs. them" worldview that is less about envy and more about refusal — and that's exactly the kind of nuance that gets flattened when AI forces songs into simple positive/negative buckets. The song is self-aware about performance and status, even while being a mainstream pop product itself.</p>
+    <div class="lyric-excerpt">"We don't care, we aren't caught up in your love affair / And we'll never be royals."</div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">OBS Recording Clip</div>
+    <div class="obs-video-wrap">
+      <div class="obs-label">OBS Recorded Clip — A short excerpt</div>
+      <div class="obs-audio-wrap">
+        <audio controls>
+          <source src="Royals_OBS.m4a" type="audio/mp4"/>
+        </audio>
+      </div>
+    </div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">Analysis</div>
+    <div class="analysis-block" data-type="Sentiment Analysis">
+      <div class="analysis-title">Gemini 2.5 Flash vs. VADER — Irony Detection</div>
+      <div class="analysis-subtitle">Method: 10 lyric excerpts rated by AI vs. human · Metric: Success rate, VADER compound score (–1 to 1)</div>
+      <p class="analysis-text">We compared two AI sentiment tools — Google's Gemini 2.5 Flash (an LLM) and NLTK's VADER (a rule-based lexicon model) — against human-labeled sentiment ratings for ten lyric excerpts from "Royals." Gemini achieved a success rate of 50% and VADER scored 40%.</p>
+      <p class="analysis-text">Both tools struggled with the same core problem: "Royals" is built on irony and satire, and neither could detect when language that sounds positive is actually being used critically. The excerpt listing luxury brand names — "Cristal, Maybach, diamonds on your timepiece, jet planes, islands, tigers on a gold leash" — was labeled <strong>negative</strong> by the human rater because the song mocks that excess. Both tools rated it <strong>positive</strong>, reading glamorous vocabulary at face value.</p>
+      <p class="analysis-text">VADER even rated the "bloodstains, ball gowns" excerpt as positive because words like "gold" triggered positive associations in its lexicon. The tools only succeeded when surface-level language aligned with actual intent.</p>
+      <div class="metric-row">
+        <div class="metric-box"><span class="metric-label">Gemini Success</span><span class="metric-val">50%</span><span class="metric-desc">5/10 excerpts correct</span></div>
+        <div class="metric-box"><span class="metric-label">VADER Success</span><span class="metric-val">40%</span><span class="metric-desc">4/10 excerpts correct</span></div>
+        <div class="metric-box"><span class="metric-label">VADER Full Song</span><span class="metric-val">0.99</span><span class="metric-desc">compound score (–1 to 1)</span></div>
+      </div>
+      <table class="cmp-table">
+        <thead><tr><th>Excerpt</th><th class="td-ai">AI Label</th><th class="td-h">Human Label</th></tr></thead>
+        <tbody>
+          <tr><td>"Cristal, Maybach, diamonds on your timepiece, jet planes…"</td><td class="td-ai">Positive (luxury vocab)</td><td class="td-h">Negative — satirical mockery of excess</td></tr>
+          <tr><td>"bloodstains, ball gowns"</td><td class="td-ai">Positive (VADER flags "gold")</td><td class="td-h">Ambivalent / dark contrast</td></tr>
+          <tr><td>"we're driving Cadillacs in our dreams"</td><td class="td-ai">Neutral ✓</td><td class="td-h">Neutral ✓ — aspirational but ironic</td></tr>
+          <tr><td>Full-song compound score (VADER)</td><td class="td-ai">0.9919 — extreme positive</td><td class="td-h">Satirical refusal — neither positive nor negative</td></tr>
+        </tbody>
+      </table>
+      <p class="analysis-text" style="margin-top:1.5rem;">VADER's score of 0.9919 is especially telling. It places "Royals" at the extreme positive end of the scale — fundamentally misreading a song whose thesis is a refusal of pop culture's aspirational fantasy. VADER sees "queen," "rule," "great," and "diamonds" without any mechanism for understanding irony.</p>
+      <div class="verdict-box">
+        <div class="verdict-label">Archival Verdict</div>
+        <p class="verdict-text">Neither tool is ready without human oversight. A sentiment score of 0.99 attached to "Royals" in archive metadata would categorize a satirical critique alongside genuinely celebratory pop, erasing what makes the artifact culturally significant. Guardrails must include flagging extreme scores on ambiguous texts and requiring human review for content involving irony or satire. <strong>Not ready for unsupervised archival sentiment tagging.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ═══ DETAIL: RAP GOD ═══ -->
+<div id="page-rapgod" class="page detail-page">
+<a class="detail-back" onclick="showPage('home')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6H2M2 6L6 2M2 6L6 10"/></svg>Back to Archive</a>
+<div class="detail-hero">
+  <div class="detail-cover">
+    <img src="https://upload.wikimedia.org/wikipedia/en/5/50/Eminem_Rap_God.png" alt="MMLP2 — Eminem"/>
+    <div class="detail-cover-overlay"></div>
+  </div>
+  <div class="detail-header">
+    <div class="detail-eyebrow">Artifact 03 · Transcription Analysis</div>
+    <div class="detail-h1">Rap <em>God</em></div>
+    <div class="detail-artist">Eminem</div>
+    <div class="detail-meta-line">2013 · The Marshall Mathers LP 2 · Aftermath / Interscope</div>
+    <div class="detail-tags"><span class="tag hl">transcription</span><span class="tag hl">WER 92.2%</span><span class="tag">Whisper</span><span class="tag">speed</span><span class="tag">performance</span><span class="tag">legibility</span><span class="tag">metadata</span></div>
+    <a href="https://youtu.be/XbGs_qK2PQA" target="_blank" class="detail-listen"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>Listen on YouTube</a>
+  </div>
+</div>
+<div class="detail-body">
+  <div class="detail-section">
+    <div class="detail-section-label">Museum Entry</div>
+    <p class="detail-text">"Rap God" is a performance-centered track where meaning is carried not just by the lyrics but by speed, precision, and control of delivery. The song is packed with rapid-fire phrasing, breathless transitions, and reference-heavy lines — easy for a human listener to follow with context but easy for automated systems to mishear or flatten. That matters for archiving because if a transcript is wrong, the artifact becomes less searchable, less interpretable, and more likely to be misrepresented in metadata. Transcription is not a neutral mechanical step — it is a gatekeeper for what parts of a musical artifact become legible to future audiences.</p>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">OBS Recording Clip</div>
+    <div class="obs-video-wrap">
+      <div class="obs-label">OBS Recorded Clip — 5 second excerpt</div>
+      <div class="obs-video-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <p>To add your OBS clip: replace this block with<br/>&lt;video src="RapGod_OBS.mp4" controls class="obs-video-embed"&gt;&lt;/video&gt;</p>
+      </div>
+    </div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">Analysis</div>
+    <div class="analysis-block" data-type="Transcription + WER">
+      <div class="analysis-title">OpenAI Whisper — Word Error Rate Analysis</div>
+      <div class="analysis-subtitle">Method: AI transcript (Whisper) vs. authoritative manual transcript · Metric: Word Error Rate (WER)</div>
+      <p class="analysis-text">We used OpenAI's Whisper model to generate an AI transcript of "Rap God" and compared it against an authoritative manual transcript using Word Error Rate (WER) as the quantitative measure.</p>
+      <div class="metric-row">
+        <div class="metric-box"><span class="metric-label">Word Error Rate</span><span class="metric-val">92.2%</span><span class="metric-desc">errors per 100 words</span></div>
+        <div class="metric-box"><span class="metric-label">Manual Transcript</span><span class="metric-val">1,564</span><span class="metric-desc">words (authoritative)</span></div>
+        <div class="metric-box"><span class="metric-label">AI Output</span><span class="metric-val">291</span><span class="metric-desc">words (Whisper)</span></div>
+      </div>
+      <p class="analysis-text">The results were striking. A WER of 92.2% means that for every 100 words in the authoritative transcript, roughly 92 contained some form of error. The Whisper output contained only 291 words against 1,564 in the manual — the model failed to capture the vast majority of spoken content. A closer look revealed the problem went beyond simple mishearings: the output included processing metadata like timestamps and system strings rather than actual lyrics, meaning the raw output was never properly post-processed.</p>
+      <p class="analysis-text">Even beyond the metadata issue, the dramatic word-count gap suggests the model could not keep up with Eminem's rapid-fire delivery — clocking upwards of 6 syllables per second in peak sections.</p>
+      <table class="cmp-table">
+        <thead><tr><th>Error Type</th><th class="td-ai">AI Behavior (Whisper)</th><th class="td-h">Correct Handling</th></tr></thead>
+        <tbody>
+          <tr><td>Wrong words</td><td class="td-ai">Phonetically similar but semantically wrong substitutions at high tempo</td><td class="td-h">Precise rhyme-scheme vocabulary with specific cultural references</td></tr>
+          <tr><td>Missing words</td><td class="td-ai">Dropped syllables in ultra-fast sections (6+ syl/sec)</td><td class="td-h">Full word chains intact in manual review</td></tr>
+          <tr><td>Added words</td><td class="td-ai">Hallucinated filler at breath transitions</td><td class="td-h">Deliberate silence used as rhythmic device</td></tr>
+          <tr><td>Metadata contamination</td><td class="td-ai">Timestamps + system strings in output body</td><td class="td-h">Clean text output only</td></tr>
+        </tbody>
+      </table>
+      <div class="verdict-box">
+        <div class="verdict-label">Archival Verdict</div>
+        <p class="verdict-text">Transcription is not a neutral mechanical step — it is a gatekeeper for what parts of a musical artifact become legible to future audiences. This tool is clearly not ready for performance-heavy music without significant human oversight. Archives working with rap or spoken word must treat AI transcription as a rough first pass only. Guardrails: automatically flag when AI transcript word count is dramatically shorter than expected; mandate human review for rapid or non-standard speech patterns. <strong>Not ready as a standalone archival tool.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ═══ DETAIL: ALRIGHT ═══ -->
+<div id="page-alright" class="page detail-page">
+<a class="detail-back" onclick="showPage('home')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6H2M2 6L6 2M2 6L6 10"/></svg>Back to Archive</a>
+<div class="detail-hero">
+  <div class="detail-cover">
+    <img src="https://cdn-images.dzcdn.net/images/cover/5c163a572dc76597231aa942375dec89/1900x1900-000000-81-0-0.jpg" alt="To Pimp a Butterfly — Kendrick Lamar"/>
+    <div class="detail-cover-overlay"></div>
+  </div>
+  <div class="detail-header">
+    <div class="detail-eyebrow">Artifact 04 · Natural Language Processing</div>
+    <div class="detail-h1"><em>Alright</em></div>
+    <div class="detail-artist">Kendrick Lamar</div>
+    <div class="detail-meta-line">2015 · To Pimp a Butterfly · Top Dawg Entertainment<br/>Written by Kendrick Lamar</div>
+    <div class="detail-tags"><span class="tag hl">NLP</span><span class="tag hl">protest</span><span class="tag">tokenization</span><span class="tag">bigrams</span><span class="tag">tidytext</span><span class="tag">resilience</span><span class="tag">BLM</span></div>
+    <a href="https://www.youtube.com/watch?v=JocAXINz-YE" target="_blank" class="detail-listen"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>Listen on YouTube</a>
+  </div>
+</div>
+<div class="detail-body">
+  <div class="detail-section">
+    <div class="detail-section-label">Museum Entry</div>
+    <p class="detail-text">One of the major themes of "Alright" is resilience and faith in times of adversity. Kendrick Lamar addresses the prevalence of police brutality and systemic racism while reiterating the importance of coming together as a community and persevering through adversity. The song became an anthem for the Black Lives Matter movement — meaning that cannot be derived from line-by-line NLP analysis alone.</p>
+    <div class="lyric-excerpt">"Uh, and when I wake up<br/>I recognize you're looking at me for the pay cut<br/>But homicide be looking at you from the face down"</div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">OBS Recording Clip</div>
+    <div class="obs-video-wrap">
+      <div class="obs-label">OBS Recorded Clip — 5 second excerpt</div>
+      <div class="obs-video-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <p>To add your OBS clip: replace this block with<br/>&lt;video src="Alright_OBS.mp4" controls class="obs-video-embed"&gt;&lt;/video&gt;</p>
+      </div>
+    </div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">Analysis</div>
+    <div class="analysis-block" data-type="Natural Language Processing">
+      <div class="analysis-title">Tokenization, Keyword Extraction & Bigram Analysis</div>
+      <div class="analysis-subtitle">Method A: Tokenization + stopword removal + word frequency (tidytext, R) · Method B: N-gram (bigram) extraction</div>
+      <p class="analysis-text">To analyze the excerpt from "Alright," we used two NLP techniques: keyword extraction and phrase-level theme extraction. Using the <strong>tidytext</strong> package in R, we tokenized the lyric excerpt into individual words, removed stopwords, and counted word frequency to identify salient terms. We then ran bigram extraction to identify recurring phrases signaling the artist's themes.</p>
+      <p class="analysis-text"><strong>Keyword Analysis:</strong> Themes of conflict, vulnerability, and resistance dominated the vocabulary. Words like <em>hurt, kill, hate, gun, dead</em> pointed to a lexical field of violence and threat. Terms like <em>pride, weak, world</em> suggested emotional struggle and disillusionment. The repetition of <em>po</em> — slang for police — signals institutional authority and police brutality as a central concern.</p>
+      <p class="analysis-text"><strong>Bigram Analysis:</strong> N-gram extraction highlighted phrases: "wanna kill," "po po," "hate po," and "getting weak." These phrases share a common denominator of danger and physical vulnerability, allowing us to infer the artist's narrative about police brutality.</p>
+      <table class="cmp-table">
+        <thead><tr><th>Dimension</th><th class="td-ai">NLP Output</th><th class="td-h">Human Close Reading</th></tr></thead>
+        <tbody>
+          <tr><td>Primary theme</td><td class="td-ai">Danger, violence, economic hardship</td><td class="td-h">Systemic racism, resilience, communal faith under pressure</td></tr>
+          <tr><td>Tone</td><td class="td-ai">Negative, anxious</td><td class="td-h">Defiant, spiritual, collectively empowering</td></tr>
+          <tr><td>Slang ("po")</td><td class="td-ai">Low-frequency token, partially flagged</td><td class="td-h">Central symbol — police brutality, institutional power</td></tr>
+          <tr><td>Cultural register</td><td class="td-ai">Not detected</td><td class="td-h">Black protest tradition, BLM, spoken-word lineage</td></tr>
+          <tr><td>"Alright" refrain</td><td class="td-ai">High-frequency positive word</td><td class="td-h">Defiant assertion — collective survival, not optimism</td></tr>
+        </tbody>
+      </table>
+      <div class="verdict-box">
+        <div class="verdict-label">Archival Verdict</div>
+        <p class="verdict-text">NLP techniques can surface thematic motifs and serve as useful exploratory scaffolding. However, they cannot register the rhetorical function of words within a cultural tradition. The defiance encoded in "we gon' be alright" is not accessible to a tool that lacks the cultural knowledge to read it as resistance rather than optimism. Human review is essential for protest, religious, or culturally embedded content. <strong>Useful first-pass tool; not a substitute for culturally informed human analysis.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ═══ DETAIL: DTMF ═══ -->
+<div id="page-dtmf" class="page detail-page">
+<a class="detail-back" onclick="showPage('home')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6H2M2 6L6 2M2 6L6 10"/></svg>Back to Archive</a>
+<div class="detail-hero">
+  <div class="detail-cover">
+    <img src="https://cvhsnews.org/wp-content/uploads/2025/03/bad-bunnt-covery.jpg" alt="Un Verano Sin Ti — Bad Bunny"/>
+    <div class="detail-cover-overlay"></div>
+  </div>
+  <div class="detail-header">
+    <div class="detail-eyebrow">Artifact 05 · Translation + Computer Vision</div>
+    <div class="detail-h1"><em>DTMF</em></div>
+    <div class="detail-artist">Bad Bunny</div>
+    <div class="detail-meta-line">2022 · Un Verano Sin Ti · Rimas Entertainment<br/>Written by Benito Antonio Martínez Ocasio</div>
+    <div class="detail-tags"><span class="tag hl">translation</span><span class="tag hl">computer vision</span><span class="tag">SBERT</span><span class="tag">Jaccard</span><span class="tag">Spanish</span><span class="tag">Puerto Rican slang</span><span class="tag">bilingual</span></div>
+    <a href="https://www.youtube.com/watch?v=TiebZllW8As" target="_blank" class="detail-listen"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>Listen on YouTube</a>
+  </div>
+</div>
+<div class="detail-body">
+  <div class="detail-section">
+    <div class="detail-section-label">Museum Entry</div>
+    <p class="detail-text">"DTMF" is significant because it exemplifies how songs can be appreciated regardless of the listener's understanding of the lyrics. For AI analysis, this creates a unique challenge: the song's upbeat rhythm and vocal tone carry meaning at odds with its deeper lyrical content — a surface/depth gap that grows wider when machine-translated. Because most AI systems are trained primarily on English-language datasets, Spanish-language analysis reveals compounding biases and cultural blind spots.</p>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">OBS Recording Clip</div>
+    <div class="obs-video-wrap">
+      <div class="obs-label">OBS Recorded Clip — 5 second excerpt</div>
+      <div class="obs-video-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <p>To add your OBS clip: replace this block with<br/>&lt;video src="DTMF_OBS.mp4" controls class="obs-video-embed"&gt;&lt;/video&gt;</p>
+      </div>
+    </div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">Analysis I — Translation</div>
+    <div class="analysis-block" data-type="Translation Analysis">
+      <div class="analysis-title">Google Translate vs. Human — Puerto Rican Slang</div>
+      <div class="analysis-subtitle">Method: 8 lines with slang/colloquial phrasing · Metric: SBERT cosine similarity (Google output vs. human translation)</div>
+      <p class="analysis-text">We selected eight lines from "DTMF" containing Puerto Rican slang, colloquial contractions, or culturally specific phrasing and compared Google Translate's Spanish-to-English output against a human translation using SBERT cosine similarity. The Google↔Human similarity score tells us how close the machine translation came to a culturally informed human reading.</p>
+      <p class="analysis-text">The results showed a sharp divide. Straightforward lines scored extremely high — "Otro sunset bonito que veo en San Juan" hit 0.9968, and "Aquí en la isla e' donde yo quiero estar" scored a perfect 1.0. But slang-heavy lines told a different story.</p>
+      <table class="cmp-table">
+        <thead><tr><th>Spanish Line</th><th class="td-ai">Google Translate</th><th class="td-h">Human Translation</th><th>Similarity</th></tr></thead>
+        <tbody>
+          <tr><td>"Tengo el pecho pelao, me di una matá"</td><td class="td-ai">"I have a small chest, I took a blow"</td><td class="td-h">Scraped chest — I took a hard wipeout</td><td style="color:var(--red);font-family:'DM Mono',monospace">0.5293</td></tr>
+          <tr><td>"El corazón dándome patá"</td><td class="td-ai">"My heart beating me"</td><td class="td-h">My heart being kicked around emotionally</td><td style="color:#c8a050;font-family:'DM Mono',monospace">0.6930</td></tr>
+          <tr><td>"Pa llegarle con Roro, Julito, Cristal"</td><td class="td-ai">"To reach him with…"</td><td class="td-h">Pulling up on someone with friends</td><td style="color:#c8a050;font-family:'DM Mono',monospace">0.7754</td></tr>
+          <tr><td>"Aquí en la isla e' donde yo quiero estar"</td><td class="td-ai">Exact match</td><td class="td-h">Exact match</td><td style="color:#acd4b0;font-family:'DM Mono',monospace">1.0000</td></tr>
+          <tr><td colspan="3"><strong>Average across all 8 lines</strong></td><td style="color:var(--gold);font-family:'DM Mono',monospace;font-weight:700">0.8442</td></tr>
+        </tbody>
+      </table>
+      <p class="analysis-text" style="margin-top:1.5rem;">The average of 0.8442 looks decent at first glance. But it masks the real problem: reliability swings from near-perfect on standard lines to barely above chance on slang. The lines where translation fails hardest are exactly the lines that carry the most cultural specificity — the slang, contractions, and embedded social references that make this a Puerto Rican song rather than generic pop.</p>
+      <div class="verdict-box">
+        <div class="verdict-label">Archival Verdict</div>
+        <p class="verdict-text">Guardrails should include flagging content with non-standard orthography, requiring bilingual human review for public-facing metadata, and running multiple translation tools to surface disagreements on difficult passages. Average scores alone are insufficient — variance across lines matters as much as the mean. <strong>Not ready for culturally specific multilingual archival metadata without human review.</strong></p>
+      </div>
+    </div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">Analysis II — Computer Vision</div>
+    <div class="analysis-block" data-type="Computer Vision">
+      <div class="analysis-title">DH150 CompVision — Album Cover Tagging</div>
+      <div class="analysis-subtitle">Method: AI image tags vs. 2 manual reviewers · Metric: Jaccard Similarity</div>
+      <p class="analysis-text">We used the DH150 CompVision notebook to generate AI tags for the album cover — an image of outdoor chairs surrounded by tropical plants. AI-generated tags were compared against two human reviewers using Jaccard Similarity.</p>
+      <p class="analysis-text"><strong>AI tags:</strong> bananas, outdoor, chairs, tropical, jungle.<br/><strong>Reviewer A tags:</strong> chair, trees, bananas, outdoor, tropical. <em>Jaccard = 0.4286</em> (3 overlap, 7 union).<br/><strong>Reviewer B tags:</strong> plants, bananas, plastic, leaves, grass. <em>Jaccard = 0.1111</em> (1 overlap, 9 union).</p>
+      <div class="metric-row">
+        <div class="metric-box"><span class="metric-label">Reviewer A Score</span><span class="metric-val">0.43</span><span class="metric-desc">Jaccard similarity</span></div>
+        <div class="metric-box"><span class="metric-label">Reviewer B Score</span><span class="metric-val">0.11</span><span class="metric-desc">Jaccard similarity</span></div>
+      </div>
+      <div class="jbars" id="dtmf-jbars">
+        <div class="jbar">
+          <div class="jbar-label"><span>Reviewer A vs. AI (chair, trees, bananas, outdoor, tropical)</span><span>0.43</span></div>
+          <div class="jbar-track"><div class="jbar-fill" data-w="43"></div></div>
+        </div>
+        <div class="jbar">
+          <div class="jbar-label"><span>Reviewer B vs. AI (plants, bananas, plastic, leaves, grass)</span><span>0.11</span></div>
+          <div class="jbar-track"><div class="jbar-fill" data-w="11"></div></div>
+        </div>
+      </div>
+      <p class="analysis-text">The sharp drop between Reviewer A (0.43) and Reviewer B (0.11) highlights a limitation of both the tool and the Jaccard metric: it treats near-synonyms like "trees" and "plants" as completely different, understating actual agreement. Reviewer A focused on scene-level descriptors aligned with AI outputs; Reviewer B focused on natural elements and materials. Neither is wrong — they reflect different ways of seeing the same image.</p>
+      <div class="verdict-box">
+        <div class="verdict-label">Archival Verdict</div>
+        <p class="verdict-text">This tool could speed up first-pass cataloging but requires human review. Archives would benefit from using semantic similarity measures alongside exact-match Jaccard to handle synonyms and domain-specific vocabulary. The tool is a useful starting point, but not ready to replace manual tagging without guardrails. <strong>Ready for first-pass use only; human review required.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<!-- ═══ DETAIL: DANCING QUEEN ═══ -->
+<div id="page-dancingqueen" class="page detail-page">
+<a class="detail-back" onclick="showPage('home')"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M10 6H2M2 6L6 2M2 6L6 10"/></svg>Back to Archive</a>
+<div class="detail-hero">
+  <div class="detail-cover">
+    <img src="https://e.snmc.io/i/1200/s/ba93504b7f780c46091fab825004e562/11411333" alt="Arrival — ABBA"/>
+    <div class="detail-cover-overlay"></div>
+  </div>
+  <div class="detail-header">
+    <div class="detail-eyebrow">Artifact 06 · Sentiment Analysis</div>
+    <div class="detail-h1">Dancing <em>Queen</em></div>
+    <div class="detail-artist">ABBA</div>
+    <div class="detail-meta-line">1976 · ABBA Gold · Polar Music<br/>Written by Benny Andersson, Stig Anderson, Björn Ulvaeus</div>
+    <div class="detail-tags"><span class="tag hl">sentiment</span><span class="tag hl">BERT</span><span class="tag">VADER</span><span class="tag">context</span><span class="tag">joy</span><span class="tag">transformer</span><span class="tag">methodology</span></div>
+    <a href="https://www.youtube.com/results?search_query=ABBA+Dancing+Queen+official" target="_blank" class="detail-listen"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>Search on YouTube</a>
+  </div>
+</div>
+<div class="detail-body">
+  <div class="detail-section">
+    <div class="detail-section-label">Museum Entry</div>
+    <p class="detail-text">"Dancing Queen" is one of the most immediately recognizable expressions of joy in the pop canon — a song whose positivity seems self-evident to any listener. Yet it serves as a revealing test case for sentiment analysis methodology, because the lyrics use mostly neutral vocabulary ("queen," "girl," "dance") to express a deeply positive emotional experience. This makes it an ideal artifact for comparing lexicon-based and context-aware AI sentiment models side by side.</p>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">OBS Recording Clip</div>
+    <div class="obs-video-wrap">
+      <div class="obs-label">OBS Recorded Clip — 5 second excerpt</div>
+      <div class="obs-video-placeholder">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+        <p>To add your OBS clip: replace this block with<br/>&lt;video src="DancingQueen_OBS.mp4" controls class="obs-video-embed"&gt;&lt;/video&gt;</p>
+      </div>
+    </div>
+  </div>
+  <div class="detail-section">
+    <div class="detail-section-label">Analysis</div>
+    <div class="analysis-block" data-type="Sentiment Analysis">
+      <div class="analysis-title">VADER vs. BERT — The Contextual Sentiment Gap</div>
+      <div class="analysis-subtitle">Method A: VADER lexicon scoring · Method B: BERT transformer model · 9 lyric lines analyzed</div>
+      <p class="analysis-text">To assess the emotional tone of "Dancing Queen," we used two sentiment analysis methods with fundamentally different architectures. The comparison reveals a stark methodological split between lexicon-based and contextual approaches.</p>
+      <p class="analysis-text"><strong>VADER</strong> gave an average sentiment score of approximately 0.08 — slightly above neutral. Although these lyrics obviously convey positive sentiment to human ears, VADER cannot provide an accurate analysis because it assigns scores to individual words based on a predefined lexicon. Many words in the excerpt — "queen," "girl," "dance" — carry neutral lexicon values. VADER cannot recognize them as emotionally positive because it does not consider the context or overall sentence structure.</p>
+      <p class="analysis-text"><strong>BERT</strong> produced a markedly different result, classifying 8 of 9 lines as extremely positive (≈0.99). Unlike VADER, BERT's transformer architecture evaluates sentiment based on the full context and overall meaning of each sentence. Phrases like "having the time of your life" and "you can dance" are correctly identified as strongly positive because BERT understands their relational and contextual meaning.</p>
+      <div class="metric-row">
+        <div class="metric-box"><span class="metric-label">VADER Average</span><span class="metric-val">0.08</span><span class="metric-desc">barely above neutral</span></div>
+        <div class="metric-box"><span class="metric-label">BERT Score</span><span class="metric-val">≈0.99</span><span class="metric-desc">8 of 9 lines: extremely +</span></div>
+        <div class="metric-box"><span class="metric-label">Human Rating</span><span class="metric-val">High+</span><span class="metric-desc">clearly joyful / celebratory</span></div>
+      </div>
+      <table class="cmp-table">
+        <thead><tr><th>Lyric Line</th><th class="td-ai">VADER Score</th><th style="color:#7eb8ff">BERT Score</th><th class="td-h">Human Rating</th></tr></thead>
+        <tbody>
+          <tr><td>"You are the dancing queen"</td><td class="td-ai">0.00 (neutral)</td><td style="color:#7eb8ff">0.99 (strongly +)</td><td class="td-h">Strongly positive</td></tr>
+          <tr><td>"Having the time of your life"</td><td class="td-ai">0.44</td><td style="color:#7eb8ff">0.99</td><td class="td-h">Strongly positive</td></tr>
+          <tr><td>"Young and sweet, only seventeen"</td><td class="td-ai">0.29</td><td style="color:#7eb8ff">0.99</td><td class="td-h">Positive</td></tr>
+          <tr><td>"You can dance, you can jive"</td><td class="td-ai">0.00</td><td style="color:#7eb8ff">0.99</td><td class="td-h">Strongly positive</td></tr>
+        </tbody>
+      </table>
+      <p class="analysis-text" style="margin-top:1.5rem;">The comparison highlights a critical methodological insight. Lexicon-based sentiment analysis struggles with lyrics because normally neutral words cannot be overturned and assessed as positive or negative in context. Contextual transformer models are better at capturing the narrative as a whole and perform a more accurate analysis of the author's intended message.</p>
+      <div class="verdict-box">
+        <div class="verdict-label">Archival Verdict</div>
+        <p class="verdict-text">For archival sentiment metadata, BERT-class models represent a significant improvement over lexicon-based tools like VADER — particularly for music, where emotional meaning is encoded in phrasing and context rather than individual word sentiment. However, even BERT requires human oversight for irony, satire, and culturally specific emotional registers (as demonstrated by "Royals"). The choice of sentiment tool should be documented as part of archive metadata provenance. <strong>BERT conditionally ready; VADER requires supplementation with human review.</strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+
+<script>
+function showPage(id){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(id==='dtmf'){setTimeout(animateJbars,200);}
+}
+function scrollToSection(id){
+  setTimeout(()=>{const el=document.getElementById(id);if(el)el.scrollIntoView({behavior:'smooth'});},80);
+}
+function animateJbars(){
+  document.querySelectorAll('.jbar-fill').forEach(bar=>{
+    const w=bar.getAttribute('data-w');
+    if(w)bar.style.width=w+'%';
+  });
+}
+
+// Waveform
+const wf=document.getElementById('waveform');
+for(let i=0;i<120;i++){
+  const b=document.createElement('div');
+  b.className='wave-bar';
+  b.style.height=(20+Math.random()*140)+'px';
+  b.style.setProperty('--h',(0.3+Math.random()*2).toFixed(2));
+  b.style.animationDelay=(Math.random()*2).toFixed(2)+'s';
+  b.style.animationDuration=(1.5+Math.random()*2).toFixed(2)+'s';
+  wf.appendChild(b);
+}
+
+// Tag cloud
+const tags=[
+  {text:'satire',size:2.2},{text:'resilience',size:2},{text:'nostalgia',size:1.7},{text:'energy',size:2.4},
+  {text:'protest',size:2.1},{text:'transcription',size:1.5},{text:'multilingual',size:1.6},
+  {text:'cultural memory',size:2.5},{text:'authorship',size:1.8},{text:'WER',size:1.2},
+  {text:'NLP',size:1.4},{text:'translation',size:1.6},{text:'Jaccard',size:1.2},
+  {text:'computer vision',size:1.4},{text:'social critique',size:1.9},{text:'AI limitations',size:2},
+  {text:'tone',size:2.2},{text:'identity',size:1.7},{text:'bias',size:1.6},{text:'metadata',size:1.3},
+  {text:'BERT vs VADER',size:1.5},{text:'irony',size:1.8},{text:'sentiment',size:1.9},
+];
+const cloud=document.getElementById('tagCloud');
+tags.sort(()=>Math.random()-.5).forEach(t=>{
+  const s=document.createElement('span');
+  s.className='cloud-tag';s.textContent=t.text;
+  s.style.fontSize=t.size+'rem';s.style.opacity=(0.4+t.size*0.2).toFixed(2);
+  cloud.appendChild(s);
+});
+
+// Fade in
+const obs=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*60);obs.unobserve(e.target);}});
+},{threshold:0.08});
+document.querySelectorAll('.fade-in').forEach(el=>obs.observe(el));
+
+// Jbar on scroll
+const jObs=new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{if(e.isIntersecting)animateJbars();});
+},{threshold:0.2});
+document.querySelectorAll('.jbars').forEach(el=>jObs.observe(el));
+</script>
+</body>
+</html>
