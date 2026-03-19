@@ -237,8 +237,8 @@ hr.rule{border:none;height:1px;background:linear-gradient(to right,transparent,v
         <div class="card-title">Rap God</div>
         <div class="card-artist">Eminem</div>
         <span class="card-year">2013 · The Marshall Mathers LP 2</span>
-        <p class="card-text">Whisper AI achieved a 92.2% Word Error Rate — exposing transcription as a gatekeeper for what parts of a musical artifact become legible to future audiences.</p>
-        <div class="card-tags"><span class="tag hl">transcription</span><span class="tag hl">WER 92%</span><span class="tag">Whisper</span><span class="tag">speed</span><span class="tag">metadata</span></div>
+        <p class="card-text">Whisper AI achieved a 24.68% Word Error Rate — meaning one in four words was wrong, exposing transcription as a gatekeeper for what parts of a musical artifact become legible to future audiences.</p>
+        <div class="card-tags"><span class="tag hl">transcription</span><span class="tag hl">WER 24.68%</span><span class="tag">Whisper</span><span class="tag">speed</span><span class="tag">metadata</span></div>
         <span class="card-cta">Open Artifact →</span>
       </div>
     </div>
@@ -284,7 +284,7 @@ hr.rule{border:none;height:1px;background:linear-gradient(to right,transparent,v
         <div class="card-number">Artifact 06 · Sentiment Analysis</div>
         <div class="card-title">Dancing Queen</div>
         <div class="card-artist">ABBA</div>
-        <span class="card-year">1976 · ABBA Gold · Polar Music</span>
+        <span class="card-year">1992 · ABBA Gold · Polar Music</span>
         <p class="card-text">VADER scores 0.08 (barely positive) while BERT scores 0.99 — a methodological split revealing why context-aware transformers outperform lexicon tools for music archives.</p>
         <div class="card-tags"><span class="tag hl">sentiment</span><span class="tag hl">BERT</span><span class="tag">VADER</span><span class="tag">context</span><span class="tag">methodology</span></div>
         <span class="card-cta">Open Artifact →</span>
@@ -458,7 +458,7 @@ hr.rule{border:none;height:1px;background:linear-gradient(to right,transparent,v
     <div class="detail-h1">Rap <em>God</em></div>
     <div class="detail-artist">Eminem</div>
     <div class="detail-meta-line">2013 · The Marshall Mathers LP 2 · Aftermath / Interscope</div>
-    <div class="detail-tags"><span class="tag hl">transcription</span><span class="tag hl">WER 92.2%</span><span class="tag">Whisper</span><span class="tag">speed</span><span class="tag">performance</span><span class="tag">legibility</span><span class="tag">metadata</span></div>
+    <div class="detail-tags"><span class="tag hl">transcription</span><span class="tag hl">WER 24.68%</span><span class="tag">Whisper</span><span class="tag">speed</span><span class="tag">performance</span><span class="tag">legibility</span><span class="tag">metadata</span></div>
     <a href="https://youtu.be/XbGs_qK2PQA" target="_blank" class="detail-listen"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>Listen on YouTube</a>
   </div>
 </div>
@@ -485,12 +485,12 @@ hr.rule{border:none;height:1px;background:linear-gradient(to right,transparent,v
       <div class="analysis-subtitle">Method: AI transcript (Whisper) vs. authoritative manual transcript · Metric: Word Error Rate (WER)</div>
       <p class="analysis-text">We used OpenAI's Whisper model to generate an AI transcript of "Rap God" and compared it against an authoritative manual transcript using Word Error Rate (WER) as the quantitative measure.</p>
       <div class="metric-row">
-        <div class="metric-box"><span class="metric-label">Word Error Rate</span><span class="metric-val">92.2%</span><span class="metric-desc">errors per 100 words</span></div>
-        <div class="metric-box"><span class="metric-label">Manual Transcript</span><span class="metric-val">1,564</span><span class="metric-desc">words (authoritative)</span></div>
-        <div class="metric-box"><span class="metric-label">AI Output</span><span class="metric-val">291</span><span class="metric-desc">words (Whisper)</span></div>
+        <div class="metric-box"><span class="metric-label">Word Error Rate</span><span class="metric-val">24.68%</span><span class="metric-desc">errors per 100 words</span></div>
+        <div class="metric-box"><span class="metric-label">Errors per 100 words</span><span class="metric-val">~25</span><span class="metric-desc">substitutions, deletions, insertions</span></div>
+        <div class="metric-box"><span class="metric-label">Verdict</span><span class="metric-val" style="font-size:1rem;padding-top:.25rem;">Workable Draft</span><span class="metric-desc">not a reliable finished product</span></div>
       </div>
-      <p class="analysis-text">The results were striking. A WER of 92.2% means that for every 100 words in the authoritative transcript, roughly 92 contained some form of error. The Whisper output contained only 291 words against 1,564 in the manual — the model failed to capture the vast majority of spoken content. A closer look revealed the problem went beyond simple mishearings: the output included processing metadata like timestamps and system strings rather than actual lyrics, meaning the raw output was never properly post-processed.</p>
-      <p class="analysis-text">Even beyond the metadata issue, the dramatic word-count gap suggests the model could not keep up with Eminem's rapid-fire delivery — clocking upwards of 6 syllables per second in peak sections.</p>
+      <p class="analysis-text">Whisper produced a WER of approximately 24.68%, meaning that for every 100 words in the authoritative transcript, roughly 25 contained some form of error — whether a substitution, deletion, or insertion. This is a significantly better result than a completely unusable transcript, but for a song where wordplay, references, and precise phrasing carry the meaning, losing one in four words is still a serious problem.</p>
+      <p class="analysis-text">Eminem's rapid-fire delivery, breathless transitions, and dense internal rhyme schemes make individual word accuracy especially important — a single misheard word can turn a punchline into nonsense or erase a cultural reference entirely. The fastest sections, where Eminem is pushing the limits of vocal speed, are exactly the moments where delivery and precision are the point of the performance — and those are the sections where Whisper is most likely to introduce errors.</p>
       <table class="cmp-table">
         <thead><tr><th>Error Type</th><th class="td-ai">AI Behavior (Whisper)</th><th class="td-h">Correct Handling</th></tr></thead>
         <tbody>
@@ -673,7 +673,7 @@ hr.rule{border:none;height:1px;background:linear-gradient(to right,transparent,v
     <div class="detail-eyebrow">Artifact 06 · Sentiment Analysis</div>
     <div class="detail-h1">Dancing <em>Queen</em></div>
     <div class="detail-artist">ABBA</div>
-    <div class="detail-meta-line">1976 · ABBA Gold · Polar Music<br/>Written by Benny Andersson, Stig Anderson, Björn Ulvaeus</div>
+    <div class="detail-meta-line">1992 · ABBA Gold · Polar Music<br/>Written by Benny Andersson, Stig Anderson, Björn Ulvaeus</div>
     <div class="detail-tags"><span class="tag hl">sentiment</span><span class="tag hl">BERT</span><span class="tag">VADER</span><span class="tag">context</span><span class="tag">joy</span><span class="tag">transformer</span><span class="tag">methodology</span></div>
     <a href="https://www.youtube.com/results?search_query=ABBA+Dancing+Queen+official" target="_blank" class="detail-listen"><svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 11L11 1M11 1H4M11 1V8"/></svg>Search on YouTube</a>
   </div>
